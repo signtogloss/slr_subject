@@ -1,0 +1,265 @@
+/* modern-styles.css - 现代化UI样式 */
+
+:root {
+  --primary-color: #4a6bff;
+  --primary-gradient: linear-gradient(135deg, #4a6bff 0%, #6a11cb 100%);
+  --secondary-color: #ff4a85;
+  --secondary-gradient: linear-gradient(135deg, #ff4a85 0%, #ff8a4a 100%);
+  --dark-color: #1a1a2e;
+  --light-color: #f5f5f7;
+  --success-color: #00c896;
+  --warning-color: #ffbe0b;
+  --danger-color: #ff4a4a;
+  --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --transition-fast: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* 全局样式 */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--light-color);
+  color: var(--dark-color);
+  transition: background-color var(--transition-slow);
+}
+
+/* 现代化导航栏 */
+.navbar {
+  background: var(--primary-gradient) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-fast);
+  padding: 0.8rem 1.5rem;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  background: linear-gradient(to right, #ffffff, #e0e0e0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: transform var(--transition-fast);
+}
+
+.navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+.nav-link {
+  position: relative;
+  margin: 0 0.5rem;
+  padding: 0.5rem 0.8rem !important;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: all var(--transition-fast);
+  border-radius: 6px;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: #ffffff;
+  transition: all var(--transition-fast);
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+  width: 80%;
+}
+
+.dropdown-menu {
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  animation: dropdownFade 0.3s ease;
+}
+
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+  padding: 0.7rem 1.5rem;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(74, 107, 255, 0.1);
+  color: var(--primary-color);
+  padding-left: 1.8rem;
+}
+
+.dropdown-item:hover::before {
+  content: '→';
+  position: absolute;
+  left: 0.8rem;
+  color: var(--primary-color);
+}
+
+/* 现代化按钮 */
+.btn {
+  border-radius: 8px;
+  padding: 0.6rem 1.5rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+  z-index: -1;
+}
+
+.btn:hover::before {
+  left: 0;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  border: none;
+  box-shadow: 0 4px 15px rgba(74, 107, 255, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(74, 107, 255, 0.5);
+}
+
+.btn-secondary {
+  background: var(--secondary-gradient);
+  border: none;
+  box-shadow: 0 4px 15px rgba(255, 74, 133, 0.4);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 74, 133, 0.5);
+}
+
+/* 卡片样式 */
+.card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  transition: all var(--transition-fast);
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background: var(--primary-gradient);
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 1.2rem 1.5rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* 现代化页脚 */
+/* 删除footer相关样式 */
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease forwards;
+}
+
+/* 响应式视频容器 */
+.video-container {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.video-container:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.video-container video {
+  width: 100%;
+  display: block;
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.video-container:hover .video-controls {
+  opacity: 1;
+}
+
+/* 主内容区域 */
+.main-content {
+  padding: 2rem 0;
+  min-height: calc(100vh - 76px - 200px); /* 考虑导航栏和页脚高度 */
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .navbar-brand {
+    font-size: 1.3rem;
+  }
+  
+  .card {
+    margin-bottom: 1.5rem;
+  }
+  
+  .main-content {
+    padding: 1.5rem 0;
+  }
+}
