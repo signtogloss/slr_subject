@@ -11,7 +11,7 @@ const Home = () => {
           <div className="card">
             <div className="card-header">Recognition</div>
             <div className="card-body">
-              {/* <SignLanguageRecognition /> */}
+              <SignLanguageRecognition />
             </div>
           </div>
         </div>
