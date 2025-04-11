@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import '../modern-styles.css';
 
 const SignLanguageRecognition = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -20,7 +21,7 @@ const SignLanguageRecognition = () => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-        console.log('视频流初始化成功');
+        console.log('Video stream initialized successfully');
 
         // 自动选择支持的 MIME 类型
         let mimeType = '';
@@ -31,13 +32,13 @@ const SignLanguageRecognition = () => {
         } else if (MediaRecorder.isTypeSupported('video/mp4')) {
           mimeType = 'video/mp4';
         } else {
-          throw new Error('当前浏览器不支持合适的视频编码格式');
+          throw new Error('Current browser does not support suitable video encoding format');
         }
         const options = { bitsPerSecond: 1000000, mimeType };
         mediaRecorderRef.current = new MediaRecorder(stream, options);
-        console.log('MediaRecorder 初始化成功，使用 MIME 类型：', mediaRecorderRef.current.mimeType);
+        console.log('MediaRecorder initialized successfully, using MIME type:', mediaRecorderRef.current.mimeType);
       } catch (err) {
-        const msg = `摄像头初始化失败: ${err.message}`;
+        const msg = `Camera initialization failed: ${err.message}`;
         setError(msg);
         console.error(msg);
       }
@@ -70,21 +71,21 @@ const SignLanguageRecognition = () => {
 
     // 连接打开时启动录制
     ws.addEventListener('open', () => {
-      console.log('WebSocket 连接已打开');
+      console.log('WebSocket connection opened');
 
       // 当录制到一段视频数据时，调用 ondataavailable 回调发送数据到服务器
       mediaRecorderRef.current.ondataavailable = (event) => {
-        console.log('捕获 ondataavailable 事件, 数据大小:', event.data.size, 'bytes');
+        console.log('Captured ondataavailable event, data size:', event.data.size, 'bytes');
         // 使用 MediaRecorder 的 MIME 类型构造 Blob
         const blob = new Blob([event.data], { type: mediaRecorderRef.current.mimeType });
         const reader = new FileReader();
         reader.onloadend = () => {
           const buffer = reader.result;
-          console.log('发送视频数据分片, 大小:', buffer.byteLength);
+          console.log('Sending video data chunk, size:', buffer.byteLength);
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(buffer);
           } else {
-            console.warn('发送视频数据失败，WebSocket 状态非 OPEN:', ws.readyState);
+            console.warn('Failed to send video data, WebSocket state is not OPEN:', ws.readyState);
           }
         };
         reader.readAsArrayBuffer(blob);
@@ -107,75 +108,128 @@ const SignLanguageRecognition = () => {
         // 根据返回数据结构提取识别结果字段： prediction 或 predictions 或 results
         const predictions = data.prediction || data.predictions || data.results;
         if (!predictions) {
-          console.warn('返回数据中未找到识别结果字段:', data);
+          console.warn('No recognition result field found in returned data:', data);
           return;
         }
-        console.log('解析后的识别结果:', predictions);
+        console.log('Parsed recognition results:', predictions);
         // 更新识别结果列表
         setRecognitions(prev => [...prev, ...predictions]);
       } catch (err) {
-        console.error('解析返回数据失败:', err, event.data);
+        console.error('Failed to parse returned data:', err, event.data);
       }
     });
 
     ws.addEventListener('error', (err) => {
-      console.error('WebSocket 出现错误:', err);
-      setError('WebSocket 连接错误');
+      console.error('WebSocket error occurred:', err);
+      setError('WebSocket connection error');
     });
 
     ws.addEventListener('close', (event) => {
-      console.log('WebSocket 连接关闭, 状态码:', event.code, '原因:', event.reason);
+      console.log('WebSocket connection closed, status code:', event.code, 'reason:', event.reason);
       setIsRecording(false);
     });
   };
 
   // 停止识别并关闭连接
   const stopRecognition = () => {
-    console.log('触发停止识别操作');
+    console.log('Triggering stop recognition operation');
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
-      console.log('MediaRecorder 已停止录制');
+      console.log('MediaRecorder has stopped recording');
     }
     if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
       websocketRef.current.send('DONE');
-      console.log('发送 DONE 信号');
+      console.log('Sent DONE signal');
       // websocketRef.current.close();  this is the point, we should not use it.
     }
     setIsRecording(false);
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>手语识别 —— 实时接收识别结果</h2>
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        style={{ width: '100%', maxWidth: '640px', border: '1px solid #ccc' }}
-      ></video>
-      {error && <div style={{ color: 'red', marginTop: '10px' }}>错误: {error}</div>}
-      <button onClick={isRecording ? stopRecognition : startRecognition} style={{ marginTop: '10px' }}>
-        {isRecording ? '停止识别' : '开始识别'}
-      </button>
-      <div style={{ marginTop: '20px' }}>
-        <h3>识别结果</h3>
-        {recognitions.length > 0 ? (
-          recognitions.map((pred, idx) => {
-            // 支持返回对象（包含 prediction, confidence, finished 等）或字符串
-            if (typeof pred === 'object') {
-              return (
-                <div key={idx} style={{ marginBottom: '5px' }}>
-                  <strong>{pred.prediction || pred.text || '未知'}</strong> - {Math.round((pred.confidence || 1) * 100)}% {pred.finished && '【完成】'}
-                </div>
-              );
-            } else {
-              return <div key={idx} style={{ marginBottom: '5px' }}>{pred}</div>;
-            }
-          })
-        ) : (
-          <div>暂无识别结果...</div>
+    <div className="row">
+      <div className="col-lg-7 mb-4 mb-lg-0">
+        {/* Video container */}
+        <div className="video-container mb-3">
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+          ></video>
+        </div>
+        
+        <div className="d-flex justify-content-center mb-3">
+          <button 
+            className={`btn ${isRecording ? 'btn-secondary' : 'btn-primary'} px-4 py-2`}
+            onClick={isRecording ? stopRecognition : startRecognition}
+          >
+            {isRecording ? 'Stop Recognition' : 'Start Recognition'}
+          </button>
+        </div>
+        
+        {error && (
+          <div className="alert alert-danger fade-in" role="alert">
+            <i className="fas fa-exclamation-circle me-2"></i>
+            Error: {error}
+          </div>
         )}
+      </div>
+      
+      <div className="col-lg-5">
+        <div className="card">
+          <div className="card-header bg-secondary">
+            <h3 className="mb-0 fs-5">Recognition Results</h3>
+          </div>
+          <div className="card-body" style={{maxHeight: '400px', overflowY: 'auto'}}>
+            {recognitions.length > 0 ? (
+              <div className="recognition-results">
+                {recognitions.map((pred, idx) => {
+                  // Support for returned objects (containing prediction, confidence, finished, etc.) or strings
+                  if (typeof pred === 'object') {
+                    const confidence = Math.round((pred.confidence || 1) * 100);
+                    return (
+                      <div key={idx} className="recognition-item slide-up" style={{animationDelay: `${idx * 0.05}s`}}>
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <strong className="fs-5">{pred.prediction || pred.text || 'Unknown'}</strong>
+                          <span className="badge bg-primary">{confidence}%</span>
+                        </div>
+                        <div className="progress mb-3" style={{height: '6px'}}>
+                          <div 
+                            className="progress-bar" 
+                            role="progressbar" 
+                            style={{width: `${confidence}%`, background: 'var(--primary-gradient)'}} 
+                            aria-valuenow={confidence} 
+                            aria-valuemin="0" 
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                        {pred.finished && (
+                          <span className="badge bg-success mb-2">Completed</span>
+                        )}
+                        <hr className="my-2" />
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div key={idx} className="recognition-item slide-up" style={{animationDelay: `${idx * 0.05}s`}}>
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <span>{pred}</span>
+                        </div>
+                        <hr className="my-2" />
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-4 text-muted">
+                <div className="mb-3 fs-3">📝</div>
+                <p>No recognition results yet...</p>
+                <p className="small">Click "Start Recognition" button to begin sign language recognition</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
