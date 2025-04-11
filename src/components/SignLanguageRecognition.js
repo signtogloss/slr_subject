@@ -1,16 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../modern-styles.css';
 
+// 检查浏览器是否支持语音合成API
+const speechSynthesisSupported = 'speechSynthesis' in window;
+
 const SignLanguageRecognition = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recognitions, setRecognitions] = useState([]);
   const [error, setError] = useState('');
+  const [isSpeaking, setIsSpeaking] = useState(false);
   
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const websocketRef = useRef(null);
   const streamRef = useRef(null);
 
+  // 当识别结果更新时，朗读最新的结果
+  useEffect(() => {
+    if (recognitions.length > 0 && speechSynthesisSupported) {
+      // 获取最新的识别结果
+      const latestRecognition = recognitions[recognitions.length - 1];
+      let textToSpeak = '';
+      
+      // 根据结果类型提取文本
+      if (typeof latestRecognition === 'object') {
+        textToSpeak = latestRecognition.prediction || latestRecognition.text || '未知';
+      } else {
+        textToSpeak = latestRecognition;
+      }
+      
+      // 创建语音合成实例
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      
+      // 设置语音属性（可选）
+      utterance.lang = 'zh-CN'; // 设置语言为中文
+      utterance.rate = 1.0;     // 语速 (0.1 到 10)
+      utterance.pitch = 1.0;    // 音调 (0 到 2)
+      utterance.volume = 1.0;   // 音量 (0 到 1)
+      
+      // 语音开始和结束事件处理
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = (event) => {
+        console.error('语音合成错误:', event);
+        setIsSpeaking(false);
+      };
+      
+      // 开始朗读
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [recognitions]);
+  
   // 组件挂载时初始化摄像头和MediaRecorder
   useEffect(() => {
     async function initMedia() {
@@ -55,6 +95,10 @@ const SignLanguageRecognition = () => {
       }
       if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
         websocketRef.current.close();
+      }
+      // 取消所有正在进行的语音合成
+      if (speechSynthesisSupported) {
+        window.speechSynthesis.cancel();
       }
     };
   }, []);
@@ -143,6 +187,12 @@ const SignLanguageRecognition = () => {
       // websocketRef.current.close();  this is the point, we should not use it.
     }
     setIsRecording(false);
+    
+    // 停止当前正在进行的语音合成
+    if (speechSynthesisSupported && isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
   };
 
   return (
@@ -177,8 +227,18 @@ const SignLanguageRecognition = () => {
       
       <div className="col-lg-5">
         <div className="card">
-          <div className="card-header bg-secondary">
+          <div className="card-header bg-secondary d-flex justify-content-between align-items-center">
             <h3 className="mb-0 fs-5">Recognition Results</h3>
+            {isSpeaking && (
+              <span className="badge bg-info">
+                <i className="bi bi-volume-up me-1"></i> Speaking
+              </span>
+            )}
+            {!speechSynthesisSupported && (
+              <span className="badge bg-warning">
+                <i className="bi bi-exclamation-triangle me-1"></i> Speech not supported
+              </span>
+            )}
           </div>
           <div className="card-body" style={{maxHeight: '400px', overflowY: 'auto'}}>
             {recognitions.length > 0 ? (
@@ -191,7 +251,7 @@ const SignLanguageRecognition = () => {
                       <div key={idx} className="recognition-item slide-up" style={{animationDelay: `${idx * 0.05}s`}}>
                         <div className="d-flex justify-content-between align-items-center mb-1">
                           <strong className="fs-5">{pred.prediction || pred.text || 'Unknown'}</strong>
-                          <span className="badge bg-primary">{confidence}%</span>
+                          <span className="badge bg-primary">Confidence: {confidence}%</span>
                         </div>
                         <div className="progress mb-3" style={{height: '6px'}}>
                           <div 
