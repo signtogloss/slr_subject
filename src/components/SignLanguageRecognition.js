@@ -113,9 +113,22 @@ const SignLanguageRecognition = () => {
 
     websocketRef.current = ws;
 
-    // 连接打开时启动录制
+    // 连接打开时发送配置并启动录制
     ws.addEventListener('open', () => {
       console.log('WebSocket connection opened');
+      
+      // 发送配置信息
+      const configPacket = {
+        "api_key": "a7BcDe9FgHiJkLmNoPqRsTuVwXyZ1234",
+        "protocol_version": "1.0",
+        "stream_type": "video",
+        "mode": "single",
+        "auto_terminate": true
+      };
+      
+      // 发送配置到服务器
+      ws.send(JSON.stringify(configPacket));
+      console.log('Configuration packet sent');
 
       // 当录制到一段视频数据时，调用 ondataavailable 回调发送数据到服务器
       mediaRecorderRef.current.ondataavailable = (event) => {
@@ -135,7 +148,7 @@ const SignLanguageRecognition = () => {
         reader.readAsArrayBuffer(blob);
       };
 
-      // 开始录制，传入的时间间隔必须与 slice_length 配置一致
+      // 开始录制，传入的时间间隔必须与 frame_interval_ms 配置一致
       mediaRecorderRef.current.start(500);
       setIsRecording(true);
       console.log('MediaRecorder 开始录制，切片间隔 500ms');
