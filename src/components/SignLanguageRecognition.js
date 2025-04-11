@@ -71,7 +71,9 @@ const SignLanguageRecognition = () => {
     setError('');
 
     // 建立 WebSocket 连接
-    const ws = new WebSocket('wss://api.sign-speak.com/stream-recognize-sign');
+    // const ws = new WebSocket('wss://api.sign-speak.com/stream-recognize-sign');
+    const ws = new WebSocket('wss://06c80bc4930d.ngrok.app/recognize_sign_ws');
+
     websocketRef.current = ws;
 
     // 连接打开时发送配置包，并启动录制
