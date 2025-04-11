@@ -33,7 +33,7 @@ const SignLanguageRecognition = () => {
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
       
       // 设置语音属性（可选）
-      utterance.lang = 'zh-CN'; // 设置语言为中文
+      utterance.lang = 'en-US'; // 设置语言为英文
       utterance.rate = 1.0;     // 语速 (0.1 到 10)
       utterance.pitch = 1.0;    // 音调 (0 到 2)
       utterance.volume = 1.0;   // 音量 (0 到 1)
