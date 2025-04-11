@@ -76,18 +76,18 @@ const SignLanguageRecognition = () => {
 
     websocketRef.current = ws;
 
-    // 连接打开时发送配置包，并启动录制
+    // 连接打开时启动录制
     ws.addEventListener('open', () => {
       console.log('WebSocket 连接已打开');
       
-      // 发送配置包，确保 slice_length 与录制切片间隔一致（本例中为500毫秒）
-      const configPacket = {
-        api_key: apiKey,
-        slice_length: 500,
-        single_recognition_mode: false,
-      };
-      ws.send(JSON.stringify(configPacket));
-      console.log('发送配置包:', configPacket);
+      // 保留配置包定义，但不发送给后端
+      // const configPacket = {
+      //   api_key: apiKey,
+      //   slice_length: 500,
+      //   single_recognition_mode: false,
+      // };
+      // ws.send(JSON.stringify(configPacket)); // 根据需求，不再发送配置包
+      // console.log('配置包(未发送):', configPacket);
 
       // 当录制到一段视频数据时，调用 ondataavailable 回调发送数据到服务器
       mediaRecorderRef.current.ondataavailable = (event) => {
