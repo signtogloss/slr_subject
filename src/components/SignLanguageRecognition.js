@@ -60,34 +60,17 @@ const SignLanguageRecognition = () => {
 
   // 启动识别逻辑
   const startRecognition = async () => {
-    // 获取 API 密钥
-    const apiKey = process.env.REACT_APP_SIGNSPEAK_API_KEY;
-    if (!apiKey) {
-      const msg = 'API密钥未配置，请在环境变量中设置 REACT_APP_SIGNSPEAK_API_KEY';
-      setError(msg);
-      console.error(msg);
-      return;
-    }
     setError('');
 
     // 建立 WebSocket 连接
     // const ws = new WebSocket('wss://api.sign-speak.com/stream-recognize-sign');
-    const ws = new WebSocket('wss://06c80bc4930d.ngrok.app/recognize_sign_ws');
+    const ws = new WebSocket('wss://api.signbridgeai.com/recognize_sign_ws');
 
     websocketRef.current = ws;
 
     // 连接打开时启动录制
     ws.addEventListener('open', () => {
       console.log('WebSocket 连接已打开');
-      
-      // 保留配置包定义，但不发送给后端
-      // const configPacket = {
-      //   api_key: apiKey,
-      //   slice_length: 500,
-      //   single_recognition_mode: false,
-      // };
-      // ws.send(JSON.stringify(configPacket)); // 根据需求，不再发送配置包
-      // console.log('配置包(未发送):', configPacket);
 
       // 当录制到一段视频数据时，调用 ondataavailable 回调发送数据到服务器
       mediaRecorderRef.current.ondataavailable = (event) => {
@@ -119,12 +102,8 @@ const SignLanguageRecognition = () => {
       try {
         // 尝试解析服务器返回的 JSON 数据
         const data = JSON.parse(event.data);
-        if (data === "OUT_OF_QUOTA") {
-          const msg = 'API配额已用尽';
-          setError(msg);
-          console.error(msg);
-          return;
-        }
+        // 移除API配额检查，因为不再需要API token
+        // 如果需要其他错误检查，可以在这里添加
         // 根据返回数据结构提取识别结果字段： prediction 或 predictions 或 results
         const predictions = data.prediction || data.predictions || data.results;
         if (!predictions) {
