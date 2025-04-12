@@ -122,8 +122,9 @@ const SignLanguageRecognition = () => {
         "api_key": "a7BcDe9FgHiJkLmNoPqRsTuVwXyZ1234",
         "protocol_version": "1.0",
         "stream_type": "video",
-        "mode": "single",
-        "auto_terminate": true
+        // "mode": "single",
+        "mode": "multiple",
+        // "auto_terminate": true
       };
       
       // 发送配置到服务器
