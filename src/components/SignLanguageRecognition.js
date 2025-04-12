@@ -108,7 +108,6 @@ const SignLanguageRecognition = () => {
     setError('');
 
     // 建立 WebSocket 连接
-    // const ws = new WebSocket('wss://api.sign-speak.com/stream-recognize-sign');
     const ws = new WebSocket('wss://api.signbridgeai.com/recognize_sign_ws');
 
     websocketRef.current = ws;

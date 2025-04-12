@@ -36,7 +36,7 @@ POST https://api.signbridgeai.com/recognize_sign
   "payload": "<BASE64_ENCODED_VIDEO>",
   "single_recognition_mode": true,
   "hint": "Optional recognition hint",
-  "api_key": "a7BcDe9FgHiJkLmNoPqRsTuVwXyZ1234"
+  "api_key": "<YOUR_API_KEY>"
 }
 ```
 
@@ -107,7 +107,7 @@ Upon WebSocket connection establishment, the client must immediately send the fo
 
 ```json
 {
-  "api_key": "a7BcDe9FgHiJkLmNoPqRsTuVwXyZ1234",
+  "api_key": "<YOUR_API_KEY>",
   "protocol_version": "1.0",
   "stream_type": "video",
   "mode": "single"
@@ -176,7 +176,7 @@ const ws = new WebSocket('wss://api.signbridgeai.com/recognize_sign_ws');
 
 ws.addEventListener('open', () => {
   ws.send(JSON.stringify({
-    api_key: "your_api_key",
+    api_key: process.env.REACT_APP_API_KEY,
     protocol_version: "1.0",
     stream_type: "video",
     mode: "single"
@@ -199,7 +199,7 @@ ws.send('DONE');
 
 ## API Key Management
 
-- Valid API keys predefined server-side.
+- Valid API keys are predefined server-side.
 - Invalid API keys trigger an error response and logging.
 
 ---
